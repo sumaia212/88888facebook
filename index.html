@@ -9,6 +9,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ABeeZee&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Autour+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Crete+Round&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cuprum:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Neuton:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Capture+it&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Copse&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fingerpaint&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
 <style>
 /* Layout: a sticky preview stage on the left, one quiet control panel on the right; stacked on phones.
    Color: violet-tinted greys for the UI so the pin itself is the only loud thing; raspberry accent for focus and state. */
@@ -327,6 +352,7 @@ input[type="text"] {
             <textarea id="t-text" rows="2"></textarea>
             <p class="hint" style="margin:0">Bengali letters are drawn with Hind Siliguri, because Poppins does not include them.</p>
           </div>
+          <div class="row"><label class="lbl" for="t-font">Font</label><select id="t-font"></select></div>
           <div class="row"><label class="lbl" for="t-size">Size</label><input type="range" id="t-size" min="0.025" max="0.18" step="0.001" value="0.06"></div>
           <div class="row"><label class="lbl" for="t-weight">Weight</label>
             <select id="t-weight">
@@ -392,6 +418,11 @@ input[type="text"] {
             <button type="button" class="btn sm danger" id="delLayer">Delete this text</button>
           </div>
         </div>
+        <details id="fontsD">
+          <summary>My fonts</summary>
+          <label class="drop" for="fontFile" style="padding:10px"><strong>Add a font file</strong><span>.ttf, .otf, .woff or .woff2 from your phone or computer</span><input class="sr" type="file" id="fontFile" multiple></label>
+          <div class="chips" id="myFonts" style="margin-top:10px;margin-bottom:0"></div>
+        </details>
       </section>
     </div>
   </main>
@@ -403,6 +434,21 @@ input[type="text"] {
   var $ = function (s) { return document.querySelector(s); };
   var KEY = 'pinmaker:v1';
   var SIZES = { '3:4': { w: 1080, h: 1440 }, '1:1': { w: 1080, h: 1080 }, '9:16': { w: 1080, h: 1920 }, '4:3': { w: 1440, h: 1080 } };
+  var FONT_GROUPS = [
+    ['Basic', [['Poppins', [400, 500, 600, 700, 800]], ['ABeeZee', [400]], ['Abril Fatface', [400]], ['Alegreya Sans SC', [400, 500, 700]],
+      ['Amaranth', [400, 700]], ['Autour One', [400]], ['Boogaloo', [400]], ['Comfortaa', [400, 500, 600, 700]], ['Crete Round', [400]],
+      ['Cuprum', [400, 500, 600, 700]], ['Jura', [400, 500, 600, 700]], ['Neuton', [400, 700]], ['Roboto', [400, 500, 700, 900]],
+      ['Roboto Condensed', [400, 500, 700]], ['Roboto Slab', [400, 500, 700, 800]]]],
+    ['Poster', [['Alfa Slab One', [400]], ['Anton', [400]], ['Bebas Neue', [400]], ['Bungee', [400]]]],
+    ['Fancy', [['Alex Brush', [400]], ['Allura', [400]], ['Amatic SC', [400, 700]], ['Capture it', [400]], ['Copse', [400]],
+      ['Fingerpaint', [400]], ['Grand Hotel', [400]]]]
+  ];
+  var FONT_W = {};
+  FONT_GROUPS.forEach(function (g) { g[1].forEach(function (f) { FONT_W[f[0]] = f[1]; }); });
+  var WNAMES = { 300: 'Light', 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold', 900: 'Black' };
+  var customFonts = [], fontFaces = {};
+  function fontWeights(name) { return FONT_W[name] || (customFonts.indexOf(name) >= 0 ? [400, 500, 600, 700, 800] : [400, 700]); }
+  function fontStack(name) { return '"' + (name || 'Poppins') + '", Poppins, "Hind Siliguri", system-ui, sans-serif'; }
   var SWATCHES = ['#FFFFFF', '#1C1B24', '#FFF1DC', '#FFD84D', '#F2A65A', '#E8457C', '#2E6F5E', '#1F2A44'];
   var TEXTS = { headline: 'Cozy Fall Home Ideas', sub: 'Easy ways to warm up every room', handle: 'yourblog.com' };
   var uid = function () { return Math.random().toString(36).slice(2, 8); };
@@ -410,7 +456,7 @@ input[type="text"] {
 
   function mkLayer(role, o) {
     return Object.assign({
-      id: uid(), role: role, text: TEXTS[role] || '', size: 0.06, weight: 600, color: '#FFFFFF', align: 'center',
+      id: uid(), role: role, font: 'Poppins', text: TEXTS[role] || '', size: 0.06, weight: 600, color: '#FFFFFF', align: 'center',
       caps: false, shadow: false, x: 0.5, y: 0.5, w: 0.84, lh: 1.15, ls: 0,
       boxOn: false, boxColor: '#FFFFFF', boxOpacity: 0.92,
       stroke: false, strokeColor: '#000000', strokeW: 0.06
@@ -508,7 +554,7 @@ input[type="text"] {
   function drawLayer(ctx, L, W, H, U) {
     var fs = L.size * U;
     if (!L.text.trim()) { delete bounds[L.id]; return; }
-    ctx.font = L.weight + ' ' + fs + 'px Poppins, "Hind Siliguri", system-ui, sans-serif';
+    ctx.font = L.weight + ' ' + fs + 'px ' + fontStack(L.font);
     var hasLS = 'letterSpacing' in ctx;
     var sp = hasLS ? L.ls * fs : 0;
     if (hasLS) ctx.letterSpacing = sp.toFixed(2) + 'px';
@@ -753,7 +799,7 @@ input[type="text"] {
   }
   function loadEditor() {
     var L = cur(); $('#editor').hidden = !L; if (!L) return;
-    $('#t-text').value = L.text; $('#t-size').value = L.size; $('#t-weight').value = String(L.weight);
+    $('#t-text').value = L.text; $('#t-size').value = L.size; syncFontControls(L);
     $('#t-color').value = L.color; $('#t-caps').checked = L.caps; $('#t-shadow').checked = L.shadow;
     $('#t-boxOn').checked = L.boxOn; $('#t-boxColor').value = L.boxColor; $('#t-boxOpacity').value = L.boxOpacity;
     $('#boxFields').hidden = !L.boxOn;
@@ -801,7 +847,7 @@ input[type="text"] {
     var s = SIZES[state.size];
     $('#dim').textContent = s.w + ' × ' + s.h + ' px';
   }
-  function syncAll() { syncPanel(); renderChips(); loadEditor(); renderTray(); draw(); }
+  function syncAll() { syncPanel(); renderChips(); loadEditor(); renderTray(); ensureLayerFonts(); draw(); }
 
   /* ---------- photos ---------- */
   function selectPhoto(id) {
@@ -1105,6 +1151,119 @@ input[type="text"] {
     disarmReset(); resetAll();
   });
 
+  /* ---------- fonts ---------- */
+  var fontAsked = {};
+  function ensureLayerFonts() {
+    state.layers.forEach(function (L) {
+      var key = L.weight + '|' + L.font;
+      if (fontAsked[key]) return; fontAsked[key] = 1;
+      try { document.fonts.load(L.weight + ' 40px "' + L.font + '"', 'Abc').then(function () { draw(); }, function () { }); } catch (e) { }
+    });
+  }
+  function fixWeight(L) {
+    var ws = fontWeights(L.font), best = ws[0];
+    ws.forEach(function (w) { if (Math.abs(w - L.weight) < Math.abs(best - L.weight)) best = w; });
+    L.weight = best;
+  }
+  function buildWeights(L) {
+    var sel = $('#t-weight'), ws = fontWeights(L.font);
+    if (ws.indexOf(L.weight) < 0) fixWeight(L);
+    sel.textContent = '';
+    ws.forEach(function (w) { var o = document.createElement('option'); o.value = String(w); o.textContent = WNAMES[w] || String(w); sel.appendChild(o); });
+    sel.value = String(L.weight);
+  }
+  function buildFontSelect() {
+    var sel = $('#t-font'), L = cur(); sel.textContent = '';
+    function group(label, names) {
+      var og = document.createElement('optgroup'); og.label = label;
+      names.forEach(function (n) {
+        var o = document.createElement('option'); o.value = n; o.textContent = n; o.style.fontFamily = fontStack(n); og.appendChild(o);
+      });
+      sel.appendChild(og);
+    }
+    FONT_GROUPS.forEach(function (g) { group(g[0], g[1].map(function (f) { return f[0]; })); });
+    if (customFonts.length) group('My fonts', customFonts);
+    if (L && !FONT_W[L.font] && customFonts.indexOf(L.font) < 0) group('Not available', [L.font]);
+    if (L) sel.value = L.font;
+  }
+  function syncFontControls(L) { buildFontSelect(); buildWeights(L); }
+  $('#t-font').addEventListener('change', function (e) {
+    var L = cur(); if (!L) return;
+    L.font = e.target.value; fixWeight(L); buildWeights(L); ensureLayerFonts(); draw();
+  });
+  $('#t-weight').addEventListener('change', function () { ensureLayerFonts(); });
+
+  /* ---------- my own font files, kept in this browser ---------- */
+  var idbHandle = null;
+  function idb() {
+    return new Promise(function (res, rej) {
+      if (idbHandle) return res(idbHandle);
+      if (typeof indexedDB === 'undefined') return rej(new Error('no indexedDB'));
+      var r = indexedDB.open('pinmaker', 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('fonts', { keyPath: 'name' }); };
+      r.onsuccess = function () { idbHandle = r.result; res(idbHandle); };
+      r.onerror = function () { rej(r.error); };
+    });
+  }
+  function idbRun(mode, fn) {
+    return idb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var t = db.transaction('fonts', mode), req = fn(t.objectStore('fonts'));
+        t.oncomplete = function () { res(req && req.result); }; t.onerror = function () { rej(t.error); };
+      });
+    });
+  }
+  function registerFont(name, buf) {
+    var ff = new FontFace(name, buf, { weight: '100 900' });
+    return ff.load().then(function () {
+      document.fonts.add(ff); fontFaces[name] = ff;
+      if (customFonts.indexOf(name) < 0) customFonts.push(name);
+    });
+  }
+  function renderMyFonts() {
+    var box = $('#myFonts'); box.textContent = '';
+    if (!customFonts.length) {
+      var p = document.createElement('p'); p.className = 'hint'; p.style.margin = '0';
+      p.textContent = 'Added fonts stay in this browser and appear under "My fonts" in the Font menu.';
+      box.appendChild(p); return;
+    }
+    customFonts.slice().forEach(function (name) {
+      var pair = document.createElement('span'); pair.className = 'pair';
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = name; b.style.fontFamily = fontStack(name);
+      b.addEventListener('click', function () { var L = cur(); if (L) { L.font = name; fixWeight(L); syncFontControls(L); ensureLayerFonts(); draw(); } });
+      var x = document.createElement('button'); x.type = 'button'; x.className = 'chip'; x.textContent = '×';
+      x.setAttribute('aria-label', 'Remove font ' + name);
+      x.addEventListener('click', function () {
+        try { if (fontFaces[name]) document.fonts.delete(fontFaces[name]); } catch (er) { }
+        delete fontFaces[name]; customFonts.splice(customFonts.indexOf(name), 1);
+        idbRun('readwrite', function (st) { return st.delete(name); }).catch(function () { });
+        renderMyFonts(); var L = cur(); if (L) syncFontControls(L); draw();
+      });
+      pair.appendChild(b); pair.appendChild(x); box.appendChild(pair);
+    });
+  }
+  $('#fontFile').addEventListener('change', function (e) {
+    var files = Array.prototype.slice.call(e.target.files || []); e.target.value = '';
+    files.forEach(function (f) {
+      if (!/\.(ttf|otf|woff2?)$/i.test(f.name)) { note(f.name + ' is not a font file. Use .ttf, .otf, .woff or .woff2.'); return; }
+      var name = f.name.replace(/\.[^.]+$/, '').replace(/[^A-Za-z0-9 _-]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40) || 'My font';
+      if (FONT_W[name]) name = name + ' mine';
+      f.arrayBuffer().then(function (buf) {
+        return registerFont(name, buf.slice(0)).then(function () {
+          idbRun('readwrite', function (st) { return st.put({ name: name, buf: buf }); })
+            .catch(function () { note('Added for now, but this browser would not keep the font file.'); });
+          renderMyFonts();
+          var L = cur(); if (L) { L.font = name; fixWeight(L); syncFontControls(L); } else buildFontSelect();
+          ensureLayerFonts(); draw(); note('Added font ' + name + '.');
+        });
+      }).catch(function () { note('Could not use ' + f.name + '. Try another font file.'); });
+    });
+  });
+  renderMyFonts();
+  idbRun('readonly', function (st) { return st.getAll(); }).then(function (recs) {
+    return Promise.all((recs || []).map(function (r) { return registerFont(r.name, r.buf.slice(0)).catch(function () { }); }));
+  }).then(function () { renderMyFonts(); var L = cur(); if (L) syncFontControls(L); draw(); }).catch(function () { });
+
   /* ---------- wiring ---------- */
   onSeg($('#sizeSeg'), 'size', function (v) { state.size = v; state.ox = 0; state.oy = 0; syncPanel(); draw(); });
   onSeg($('#layoutSeg'), 'layout', function (v) { state.layout = v; syncPanel(); draw(); });
@@ -1232,7 +1391,10 @@ input[type="text"] {
     return Promise.all([400, 500, 600, 700, 800].map(function (w) { return document.fonts.load(w + ' 40px Poppins'); }))
       .then(function (res) { return res.every(function (r) { return r && r.length > 0; }); })
       .catch(function () { return false; })
-      .then(function (ok) { return bn.then(function () { return ok; }); })
+      .then(function (ok) {
+        var lf = Promise.all(state.layers.map(function (L) { return document.fonts.load(L.weight + ' 40px "' + L.font + '"', 'Abc'); })).catch(function () { return []; });
+        return Promise.all([bn, lf]).then(function () { return ok; });
+      })
       .then(function (ok) { $('#fontWarn').hidden = ok; draw(); return ok; });
   }
 
@@ -1289,4 +1451,4 @@ input[type="text"] {
 </script>
 
 </body>
-</html>
+                                                                                        </html>
